@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zudum - Mi Dashboard</title>
+    
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    
+    <style>
+        .tabla-zudum {
+            width: 100%;
+            border-collapse: collapse; /* Bordes limpios */
+        }
+        .tabla-zudum th, .tabla-zudum td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .tabla-zudum th {
+            background-color: #f0f0f0; /* Un gris más claro para cabeceras */
+        }
+        .acciones a {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="content-container">
+        
+        <h2>Mi Lista de Series (Zudum)</h2>
+        
+        <a th:href="@{/nuevo}" style="display: inline-block; margin-bottom: 20px; padding: 10px; background-color: #FFDE21; color: black; text-decoration: none; font-weight: bold;">
+            + Agregar Nueva Serie
+        </a>
+
+        <table class="tabla-zudum">
+            <thead>
+                <tr>
+                    <th>Serie</th>
+                    <th>Estado</th>
+                    <th>Progreso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Stranger Things</td>
+                    <td>Viendo</td>
+                    <td>Temporada 2, Episodio 5</td>
+                    <td class="acciones">
+                        <a th:href="@{/editar/1}">Editar</a>
+                        <a th:href="@{/eliminar/1}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta serie?');">Eliminar</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>The Witcher</td>
+                    <td>Terminada</td>
+                    <td>Temporada 3, Episodio 8</td>
+                    <td class="acciones">
+                        <a th:href="@{/editar/2}">Editar</a>
+                        <a th:href="@{/eliminar/2}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta serie?');">Eliminar</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Dark</td>
+                    <td>Pendiente</td>
+                    <td>-</td>
+                    <td class="acciones">
+                        <a th:href="@{/editar/3}">Editar</a>
+                        <a th:href="@{/eliminar/3}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta serie?');">Eliminar</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

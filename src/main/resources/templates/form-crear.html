@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zudum - Agregar Serie</title>
+    
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="content-container">
+        
+        <h2>Agregar Nueva Serie a tu Lista</h2>
+        
+        <form th:action="@{/guardar}" method="post">
+            
+            <div>
+                <label for="titulo">Título de la Serie:</label>
+                <input type="text" id="titulo" name="titulo"
+                       required
+                       minlength="2"
+                       placeholder="Ej: Stranger Things">
+            </div>
+            
+            <div>
+                <label for="estado">Estado:</label>
+                <select id="estado" name="estado" required>
+                    <option value="">[Selecciona una opción]</option>
+                    <option value="VIENDO">Viendo</option>
+                    <option value="TERMINADA">Terminada</option>
+                    <option value="PENDIENTE">Pendiente</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="progreso">Progreso (Opcional):</label>
+                <input type="text" id="progreso" name="progreso"
+                       placeholder="Ej: Temporada 2, Episodio 5">
+            </div>
+
+            <button type="submit">Guardar Serie</button>
+            
+            <a th:href="@{/}" style="margin-left: 10px;">Cancelar</a>
+        </form>
+
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

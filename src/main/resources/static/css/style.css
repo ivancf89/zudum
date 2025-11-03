@@ -1,0 +1,50 @@
+/* ---- Paleta de Colores ZUDUM ---- */
+:root {
+  --color-fondo: #E0E0E0;
+  --navbar-amarillo: #FFDE21;
+  --texto-negro: #000000;
+  --grad-inicio: #FFECD2; /* Naranja brillante */
+  --grad-fin: #FCB69F;   /* Melocotón suave */
+}
+
+/* 1. Estilo del Body (Fondo Gris) */
+body {
+  background-color: var(--color-fondo);
+  font-family: Arial, sans-serif; /* Puedes cambiar la fuente si quieres */
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Asegura que el footer se pegue abajo */
+}
+
+/* 2. Estilo del Navbar (Amarillo y Negro) */
+.navbar-zudum {
+  background-color: var(--navbar-amarillo);
+  padding: 1rem 2rem;
+  font-weight: bold;
+}
+
+.navbar-zudum a {
+  color: var(--texto-negro);
+  text-decoration: none;
+  margin-right: 15px;
+}
+
+.navbar-zudum a:hover {
+  text-decoration: underline;
+}
+
+/* 3. Estilo del Footer (Gradiente Atardecer) */
+.footer-zudum {
+  margin-top: auto; /* Empuja el footer al final */
+  padding: 2rem;
+  background: linear-gradient(90deg, var(--grad-inicio), var(--grad-fin));
+  text-align: center;
+  color: #333; /* Un color oscuro que contraste con el gradiente claro */
+}
+
+/* 4. Contenedor principal para centrar contenido */
+.content-container {
+  flex-grow: 1; /* Permite que el contenido principal crezca */
+  padding: 2rem;
+}
