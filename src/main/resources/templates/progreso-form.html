@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Zudum - Registrar Progreso</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="content-container">
+    <h2>Registrar Progreso de Serie</h2>
+
+    <form th:action="@{/progreso/guardar}" method="post">
+
+        <!-- Combo Serie -->
+        <div>
+            <label for="serieSelect">Serie:</label>
+            <select id="serieSelect" name="serieId" required>
+                <option value="">-- Selecciona una serie --</option>
+                <option th:each="s : ${series}"
+                        th:value="${s.id}"
+                        th:text="${s.tituloLatam}">
+                </option>
+            </select>
+        </div>
+
+        <!-- Combo Temporada -->
+        <div>
+            <label for="temporadaSelect">Temporada:</label>
+            <select id="temporadaSelect" name="temporadaId" required>
+                <option value="">-- Selecciona una temporada --</option>
+            </select>
+        </div>
+
+        <!-- Combo Episodio -->
+        <div>
+            <label for="episodioSelect">Episodio:</label>
+            <select id="episodioSelect" name="episodioId" required>
+                <option value="">-- Selecciona un episodio --</option>
+            </select>
+        </div>
+
+        <!-- Estado (VIENDO / TERMINADA / CONGELADA / DESEO_VER) -->
+        <div>
+            <label for="estadoSelect">Estado:</label>
+            <select id="estadoSelect" name="estado" required>
+                <option value="">-- Selecciona estado --</option>
+                <option value="VIENDO">Viendo</option>
+                <option value="TERMINADA">Terminada</option>
+                <option value="CONGELADA">Congelada</option>
+                <option value="DESEO_VER">Deseo ver</option>
+            </select>
+        </div>
+
+        <button type="submit">Guardar Progreso</button>
+    </form>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- JavaScript de combos dependientes -->
+<script>
+    const serieSelect = document.getElementById('serieSelect');
+    const temporadaSelect = document.getElementById('temporadaSelect');
+    const episodioSelect = document.getElementById('episodioSelect');
+
+    serieSelect.addEventListener('change', function() {
+        const serieId = this.value;
+        temporadaSelect.innerHTML = '<option value="">-- Selecciona una temporada --</option>';
+        episodioSelect.innerHTML = '<option value="">-- Selecciona un episodio --</option>';
+
+        if (!serieId) return;
+
+        fetch(`/progreso/temporadas?serieId=${serieId}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(t => {
+                    const opt = document.createElement('option');
+                    opt.value = t.id;
+                    opt.textContent = `Temporada ${t.numeroTemporada}`;
+                    temporadaSelect.appendChild(opt);
+                });
+            });
+    });
+
+    temporadaSelect.addEventListener('change', function() {
+        const temporadaId = this.value;
+        episodioSelect.innerHTML = '<option value="">-- Selecciona un episodio --</option>';
+
+        if (!temporadaId) return;
+
+        fetch(`/progreso/episodios?temporadaId=${temporadaId}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(e => {
+                    const opt = document.createElement('option');
+                    opt.value = e.id;
+                    opt.textContent = `Episodio ${e.numeroEpisodio}: ${e.titulo}`;
+                    episodioSelect.appendChild(opt);
+                });
+            });
+    });
+</script>
+
+</body>
+</html>

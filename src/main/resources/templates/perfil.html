@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zudum - Mi Perfil</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        .tabla-zudum {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .tabla-zudum th,
+        .tabla-zudum td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .tabla-zudum th {
+            background-color: #f0f0f0;
+        }
+        .acciones-form {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .acciones-form select {
+            padding: 2px 4px;
+        }
+        .acciones-form button {
+            padding: 4px 8px;
+        }
+        .link-eliminar {
+            color: #b00020;
+            text-decoration: none;
+        }
+        .link-eliminar:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="content-container">
+        <h2>Mi perfil Zudum</h2>
+
+        <p>
+            Bienvenido a tu perfil. Aquí puedes ver tu progreso en las series
+            y cambiar el estado o eliminar alguna de tu listado.
+        </p>
+
+        <table class="tabla-zudum" th:if="${progresos != null and !progresos.isEmpty()}">
+            <thead>
+                <tr>
+                    <th>Serie</th>
+                    <th>Estado actual</th>
+                    <th>Temporada</th>
+                    <th>Episodio</th>
+                    <th>Cambiar estado</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="p : ${progresos}">
+                    <td th:text="${p.serie.tituloLatam}"></td>
+                    <td th:text="${p.estado}"></td>
+                    <td th:text="${p.temporadaActual}"></td>
+                    <td th:text="${p.episodioActual}"></td>
+                    <td>
+                        <!-- Form para cambiar estado -->
+                        <form th:action="@{/progreso/estado}" method="post" class="acciones-form">
+                            <input type="hidden" name="progresoId" th:value="${p.id}">
+
+                            <select name="estado">
+                                <option value="VIENDO"
+                                        th:selected="${p.estado.name() == 'VIENDO'}">Viendo</option>
+                                <option value="TERMINADA"
+                                        th:selected="${p.estado.name() == 'TERMINADA'}">Terminada</option>
+                                <option value="CONGELADA"
+                                        th:selected="${p.estado.name() == 'CONGELADA'}">Congelada</option>
+                                <option value="DESEO_VER"
+                                        th:selected="${p.estado.name() == 'DESEO_VER'}">Deseo ver</option>
+                            </select>
+
+                            <button type="submit">Actualizar</button>
+                        </form>
+                    </td>
+                    <td>
+                        <a th:href="@{'/progreso/eliminar/' + ${p.id}}"
+                           class="link-eliminar"
+                           onclick="return confirm('¿Seguro que quieres eliminar esta serie de tu perfil?');">
+                            Eliminar
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p th:if="${progresos == null or progresos.isEmpty()}">
+            Aún no tienes series en tu perfil. Agrega alguna desde el inicio usando
+            <strong>Registrar: fast progress bar</strong>.
+        </p>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

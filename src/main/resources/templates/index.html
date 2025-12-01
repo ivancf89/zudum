@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zudum - Mi Dashboard</title>
-    
+
+    <!-- CSS oficial con colores de Zudum -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
-    
+
     <style>
+        /* Tabla (por si la usas después, no estorba) */
         .tabla-zudum {
             width: 100%;
-            border-collapse: collapse; /* Bordes limpios */
+            border-collapse: collapse;
         }
         .tabla-zudum th, .tabla-zudum td {
             border: 1px solid #ccc;
@@ -18,68 +20,218 @@
             text-align: left;
         }
         .tabla-zudum th {
-            background-color: #f0f0f0; /* Un gris más claro para cabeceras */
+            background-color: #f0f0f0;
         }
         .acciones a {
             margin-right: 10px;
+        }
+
+        /* Títulos centrados */
+        .titulo-form,
+        .titulo-catalogo {
+            text-align: center;
+        }
+
+        /* Formulario centrado */
+        .form-progreso {
+            max-width: 600px;
+            margin: 0 auto 30px; /* centrado + espacio inferior */
+        }
+
+        .form-progreso div {
+            margin-bottom: 8px;
+        }
+
+        /* Catálogo 3x3 de posters */
+        .grid-catalogo {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 24px;
+            margin: 30px 0;
+        }
+
+        .poster-item {
+            text-align: center;
+        }
+
+        .poster-item img {
+            width: 350px;
+            height: 520px;
+            object-fit: cover;              /* recorta sin deformar */
+            border-radius: 12px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.35);
+            display: block;
+            margin: 0 auto;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; /* Hover */
+        }
+
+        .poster-item:hover img {
+            transform: scale(1.03);
+            box-shadow: 0 0 16px rgba(0,0,0,0.45);
+        }
+
+        .poster-item p {
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .btn-agregar-listado {
+            margin-top: 6px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #999;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+
+        .btn-agregar-listado:hover {
+            background-color: #FFDE21;
         }
     </style>
 </head>
 <body>
 
+    <!-- Navbar con colores desde style.css -->
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <div class="content-container">
-        
-        <h2>Mi Lista de Series (Zudum)</h2>
-        
-        <a th:href="@{/nuevo}" style="display: inline-block; margin-bottom: 20px; padding: 10px; background-color: #FFDE21; color: black; text-decoration: none; font-weight: bold;">
-            + Agregar Nueva Serie
-        </a>
 
-        <table class="tabla-zudum">
-            <thead>
-                <tr>
-                    <th>Serie</th>
-                    <th>Estado</th>
-                    <th>Progreso</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Stranger Things</td>
-                    <td>Viendo</td>
-                    <td>Temporada 2, Episodio 5</td>
-                    <td class="acciones">
-                        <a th:href="@{/editar/1}">Editar</a>
-                        <a th:href="@{/eliminar/1}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta serie?');">Eliminar</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>The Witcher</td>
-                    <td>Terminada</td>
-                    <td>Temporada 3, Episodio 8</td>
-                    <td class="acciones">
-                        <a th:href="@{/editar/2}">Editar</a>
-                        <a th:href="@{/eliminar/2}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta serie?');">Eliminar</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Dark</td>
-                    <td>Pendiente</td>
-                    <td>-</td>
-                    <td class="acciones">
-                        <a th:href="@{/editar/3}">Editar</a>
-                        <a th:href="@{/eliminar/3}" onclick="return confirm('¿Estás seguro de que deseas eliminar esta serie?');">Eliminar</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- =========================
+             Registrar progreso rápido
+        ========================== -->
+        <h2 class="titulo-form" id="fastProgressSection">Registrar: fast progress bar</h2>
+
+        <form th:action="@{/progreso/guardar}" method="post" class="form-progreso">
+            <div>
+                <label for="quickSerieSelect">Serie:</label>
+                <select id="quickSerieSelect" name="serieId" required>
+                    <option value="">-- Elige una serie --</option>
+                    <option th:each="s : ${series}"
+                            th:value="${s.id}"
+                            th:text="${s.tituloLatam}">
+                    </option>
+                </select>
+            </div>
+
+            <div>
+                <label for="quickTemporadaSelect">Temporada:</label>
+                <select id="quickTemporadaSelect" name="temporadaId" required>
+                    <option value="">-- Elige temporada --</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="quickEpisodioSelect">Episodio:</label>
+                <select id="quickEpisodioSelect" name="episodioId" required>
+                    <option value="">-- Elige episodio --</option>
+                </select>
+            </div>
+
+            <!-- Para el registro rápido dejamos por defecto VIENDO -->
+            <input type="hidden" name="estado" value="VIENDO">
+
+            <button type="submit" style="margin-top: 10px;">Guardar progreso</button>
+        </form>
+
+        <!-- =========================
+             Catálogo 3x3 de posters
+        ========================== -->
+        <h2 class="titulo-catalogo">Catálogo</h2>
+        <div class="grid-catalogo">
+            <!--
+                Asume que tienes 9 imágenes PNG en /static/img:
+                1.png, 2.png, ..., 9.png
+                donde el nombre del archivo coincide con el id de la serie.
+            -->
+            <div th:each="s : ${series}" class="poster-item">
+                <img th:src="@{'/img/' + ${s.id} + '.png'}"
+                     th:alt="'Poster de ' + ${s.tituloLatam}">
+                <p th:text="${s.tituloLatam}"></p>
+
+                <!-- Botón debajo del póster -->
+                <button type="button"
+                        class="btn-agregar-listado"
+                        th:attr="data-serie-id=${s.id}">
+                    Agregar a mi listado
+                </button>
+            </div>
+        </div>
 
     </div>
 
+    <!-- Footer con degradé desde style.css -->
     <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- JS para combos dependientes del "progreso rápido"
+         y para el botón "Agregar a mi listado" -->
+    <script>
+        const quickSerieSelect = document.getElementById('quickSerieSelect');
+        const quickTemporadaSelect = document.getElementById('quickTemporadaSelect');
+        const quickEpisodioSelect = document.getElementById('quickEpisodioSelect');
+
+        if (quickSerieSelect) {
+            quickSerieSelect.addEventListener('change', function () {
+                const serieId = this.value;
+
+                quickTemporadaSelect.innerHTML = '<option value="">-- Elige temporada --</option>';
+                quickEpisodioSelect.innerHTML = '<option value="">-- Elige episodio --</option>';
+
+                if (!serieId) return;
+
+                fetch(`/progreso/temporadas?serieId=${serieId}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        data.forEach(t => {
+                            const opt = document.createElement('option');
+                            opt.value = t.id;
+                            opt.textContent = `Temporada ${t.numeroTemporada}`;
+                            quickTemporadaSelect.appendChild(opt);
+                        });
+                    })
+                    .catch(err => console.error('Error cargando temporadas (quick):', err));
+            });
+
+            quickTemporadaSelect.addEventListener('change', function () {
+                const temporadaId = this.value;
+
+                quickEpisodioSelect.innerHTML = '<option value="">-- Elige episodio --</option>';
+
+                if (!temporadaId) return;
+
+                fetch(`/progreso/episodios?temporadaId=${temporadaId}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        data.forEach(e => {
+                            const opt = document.createElement('option');
+                            opt.value = e.id;
+                            opt.textContent = `Episodio ${e.numeroEpisodio}: ${e.titulo}`;
+                            quickEpisodioSelect.appendChild(opt);
+                        });
+                    })
+                    .catch(err => console.error('Error cargando episodios (quick):', err));
+            });
+        }
+
+        // Botones "Agregar a mi listado" debajo de cada póster
+        const agregarBtns = document.querySelectorAll('.btn-agregar-listado');
+        agregarBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const serieId = btn.getAttribute('data-serie-id');
+                if (!quickSerieSelect) return;
+
+                // Selecciona la serie en el combo
+                quickSerieSelect.value = serieId;
+                // Dispara el change para cargar temporadas
+                quickSerieSelect.dispatchEvent(new Event('change'));
+
+                // Hace scroll suave al formulario de progreso rápido
+                const fastSection = document.getElementById('fastProgressSection');
+                if (fastSection) {
+                    fastSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
