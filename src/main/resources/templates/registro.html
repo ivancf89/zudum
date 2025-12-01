@@ -15,12 +15,23 @@
         
         <div>
             <h2>Crear una Cuenta en Zudum</h2>
+
+            <!-- Mensaje de éxito -->
+            <div th:if="${mensaje}" style="color: green; margin-bottom: 10px;">
+                <span th:text="${mensaje}"></span>
+            </div>
+
+            <!-- Mensaje de error -->
+            <div th:if="${error}" style="color: red; margin-bottom: 10px;">
+                <span th:text="${error}"></span>
+            </div>
             
             <form id="registroForm" th:action="@{/registro}" method="post">
                 
                 <div>
-                    <label for="username">Usuario:</label>
-                    <input type-="text" id="username" name="username"
+                    <label for="nombre">Usuario:</label>
+                    <!-- name="nombre" PARA QUE COINCIDA CON @RequestParam("nombre") -->
+                    <input type="text" id="nombre" name="nombre"
                            required 
                            minlength="4"
                            placeholder="Ej: ivan.dev">

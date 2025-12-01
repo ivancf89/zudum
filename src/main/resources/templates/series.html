@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Zudum - Series</title>
+</head>
+<body>
+
+<h1>Zudum - Mis Series</h1>
+
+<h2>Listado de Series</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Título Original</th>
+        <th>Título LATAM</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="serie : ${series}">
+    <td th:text="${serie.id}">1</td>
+    <td th:text="${serie.tituloOriginal}">Titulo Original</td>
+    <td th:text="${serie.tituloLatam}">Titulo LATAM</td>
+    <td th:text="${serie.descripcion}">Descripción</td>
+    <td>
+        <a th:href="@{'/series/eliminar/' + ${serie.id}}">Eliminar</a>
+    </td>
+    <td>
+    <a th:href="@{'/temporadas/serie/' + ${serie.id}}">Ver temporadas</a> |
+    <a th:href="@{'/series/eliminar/' + ${serie.id}}">Eliminar</a>
+</td>
+
+</tr>
+
+
+    <!-- Si no hay series -->
+    <tr th:if="${#lists.isEmpty(series)}">
+        <td colspan="5">No hay series registradas aún.</td>
+    </tr>
+    </tbody>
+</table>
+
+<hr>
+
+<h2>Agregar Nueva Serie</h2>
+
+<form method="post" th:action="@{/series}" th:object="${serie}">
+    <label>Título Original:</label>
+    <input type="text" th:field="*{tituloOriginal}" required><br>
+
+    <label>Título LATAM:</label>
+    <input type="text" th:field="*{tituloLatam}" required><br>
+
+    <label>Descripción:</label>
+    <textarea th:field="*{descripcion}" placeholder="Profe Vicente, esto lo daré en la evaluación 3"></textarea><br>
+
+    <button type="submit">Guardar</button>
+</form>
+
+</body>
+</html>

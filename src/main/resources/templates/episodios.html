@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Episodios</title>
+</head>
+<body>
+
+<h1 th:text="'Episodios - ' + ${serie.tituloOriginal} + ' - Temporada ' + ${temporada.numeroTemporada}">
+    Episodios
+</h1>
+
+<a th:href="@{/series}">← Volver a Series</a> |
+<a th:href="@{'/temporadas/serie/' + ${serie.id}}">← Volver a Temporadas</a>
+
+<h2>Listado de Episodios</h2>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>N° Episodio</th>
+        <th>Título</th>
+        <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:if="${#lists.isEmpty(episodios)}">
+        <td colspan="4">No hay episodios registrados aún.</td>
+    </tr>
+
+    <tr th:each="ep : ${episodios}">
+        <td th:text="${ep.id}">1</td>
+        <td th:text="${ep.numeroEpisodio}">1</td>
+        <td th:text="${ep.titulo}">Título</td>
+        <td>
+            <a th:href="@{'/episodios/eliminar/' + ${ep.id}}">Eliminar</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<h2>Agregar Nuevo Episodio</h2>
+
+<form th:action="@{'/episodios/temporada/' + ${temporada.id} + '/guardar'}"
+      th:object="${episodio}" method="post">
+
+    <div>
+        <label>N° Episodio:</label>
+        <input type="number" th:field="*{numeroEpisodio}" min="1" required/>
+    </div>
+
+    <div>
+        <label>Título:</label>
+        <input type="text" th:field="*{titulo}" required/>
+    </div>
+
+    <button type="submit">Guardar</button>
+</form>
+
+</body>
+</html>
