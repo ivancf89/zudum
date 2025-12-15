@@ -1,56 +1,138 @@
-# Zudum.dev 🚀
+# ZUDUM – Chapter 3  
+**Docker, Profiles, TiDB Cloud & Railway Deployment**
 
-`Zudum` (un nombre inspirado en el icónico sonido *Tudum* de Netflix) es un proyecto de aplicación web diseñado para crear, administrar y compartir tu lista personal de series favoritas.
+## 📌 Descripción general
 
-Este proyecto nace como parte de la evaluación de la asignatura "Desarrollo de Software Web 2" del Instituto Profesional San Sebastián, implementando un flujo CRUD simulado sobre una arquitectura Spring Boot.
+ZUDUM es un proyecto académico desarrollado con **Spring Boot + Thymeleaf**, orientado a la gestión de series, temporadas y episodios, permitiendo a los usuarios registrar su progreso de visualización.
 
----
+En este **Chapter 3**, el proyecto evoluciona desde un entorno local hacia un **despliegue productivo real**, incorporando:
 
-## 🎨 La Identidad de Zudum: Colores y Diseño
-
-Zudum se desmarca visualmente de la paleta tradicional de las plataformas de streaming. Mientras Netflix se destaca por su icónico rojo, Zudum adopta un **amarillo cálido** para su identidad principal, creando una experiencia vibrante y acogedora.
-
-La paleta de colores principal es:
-
-| Componente | Color | Código Hex |
-| :--- | :--- | :--- |
-| **Navbar (Principal)** | Amarillo Cálido | `#FFDE21` |
-| **Fondo (Body)** | Gris Claro | `#E0E0E0` |
-| **Footer (Gradiente 1)**| Naranja Brillante | `#FFECD2` |
-| **Footer (Gradiente 2)**| Melocotón Suave | `#FCB69F` |
-
-* El **fondo gris (`#E0E0E0`)** fue elegido estratégicamente, ya que próximamente ayudará a destacar los posters de las series, los cuales serán reinventados utilizando IA.
-* El **footer gradiente** (`#FFECD2` a `#FCB69F`) nos recuerda a un glamuroso atardecer, dándole un toque de elegancia y calidez a la aplicación.
+- Contenerización con Docker
+- Separación de perfiles de configuración (local / producción)
+- Base de datos en la nube con **TiDB Cloud**
+- Despliegue continuo en **Railway**
 
 ---
 
-## 🛠️ Stack Tecnológico (Fase 1)
+## 🧱 Arquitectura utilizada
 
-Este proyecto está construido utilizando las siguientes tecnologías:
-
-* **Backend:** Spring Boot 3
-    * Spring Web
-    * Spring Boot DevTools
-* **Frontend:** Thymeleaf (Motor de plantillas del lado del servidor)
-* **Lenguaje:** Java 17
-* **Build Tool:** Apache Maven
-* **Estilos:** HTML5 y CSS3 (con variables CSS y gradientes).
+- **Backend:** Spring Boot 3.5.7
+- **Frontend:** Thymeleaf
+- **ORM:** Spring Data JPA / Hibernate
+- **Seguridad:** Spring Security
+- **Contenedores:** Docker (multi-stage build)
+- **Base de datos local:** H2
+- **Base de datos producción:** TiDB Cloud (compatible MySQL)
+- **Plataforma de despliegue:** Railway
 
 ---
 
-## 🚀 Estado Actual y Futuro
+## 🌿 Perfiles de configuración
 
-### Estado Actual (Fase 1 Completada)
+El proyecto utiliza perfiles de Spring para separar entornos:
 
-* Estructura completa del proyecto Spring Boot.
-* Definición de `AppController` con *endpoints* simulados (`@GetMapping`, `@PostMapping`) para todo el flujo CRUD.
-* Creación de 5 vistas con Thymeleaf: `login`, `registro`, `index` (Dashboard), `form-crear` y `form-editar`.
-* Implementación de fragmentos de Thymeleaf (`navbar`, `footer`) para reutilizar código.
-* Validaciones del lado del cliente con HTML5 (`required`, `minlength`, `type="email"`) y JavaScript (`onclick confirm`).
+### 🔹 Perfil `local`
+Archivo: `application-local.properties`
 
-### Próximos Pasos
+- Base de datos H2 en memoria
+- Consola H2 habilitada
+- Uso en desarrollo local
 
-* Integración con una base de datos (H2 o MySQL).
-* Implementación de la capa de persistencia (JPA, Repositories) y lógica de negocio (Services).
-* Implementación de Spring Security para un registro y login de usuarios real.
-* ¡**Zudum estará deployeado** próximamente en un servicio de hosting !
+### 🔹 Perfil `prod`
+Archivo: `application-prod.properties`
+
+- Conexión a TiDB Cloud
+- Credenciales inyectadas por variables de entorno
+- Pool de conexiones optimizado (HikariCP)
+- Uso en Docker / Railway
+
+Activación del perfil:
+```bash
+SPRING_PROFILES_ACTIVE=prod
+Docker
+
+El proyecto se encuentra completamente dockerizado mediante un Dockerfile multi-stage, que:
+
+Compila el proyecto con Maven
+
+Genera el JAR final
+
+Ejecuta la aplicación sobre una imagen JRE liviana
+
+Construcción de imagen
+docker build -t zudum:local .
+
+Ejecución con TiDB (producción)
+docker run -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e DB_URL="jdbc:mysql://gateway01.us-east-1.prod.aws.tidbcloud.com:4000/test?useSSL=true&requireSSL=true&verifyServerCertificate=true" \
+  -e DB_USERNAME="USUARIO_TIDB" \
+  -e DB_PASSWORD="PASSWORD_TIDB" \
+  zudum:local
+
+ TiDB Cloud
+
+Cluster Starter en TiDB Cloud
+
+Conexión segura mediante TLS
+
+Compatible con MySQL
+
+Usado como base de datos productiva real
+
+La aplicación fue probada exitosamente realizando:
+
+Login
+
+Carga de catálogo
+
+Registro y actualización de progreso
+
+Eliminación de series
+
+Persistencia entre sesiones
+
+ Railway
+
+El proyecto fue desplegado exitosamente en Railway utilizando:
+
+Imagen Docker publicada en Docker Hub
+
+Variables de entorno configuradas desde Railway
+
+Perfil prod activo
+
+URL de producción:
+https://zudum-production.up.railway.app/
+
+Todas las funcionalidades fueron validadas directamente en producción.
+
+Control de versiones
+
+Rama principal de este avance:
+zudum-chapter3
+
+Incluye:
+
+Dockerfile
+
+Separación de controladores
+
+Configuración de seguridad
+
+Perfiles de entorno
+
+Despliegue productivo
+ Estado del proyecto
+
+✔ Contenedor local funcionando
+✔ Conexión exitosa a TiDB Cloud
+✔ Despliegue productivo estable
+✔ Persistencia real de datos
+✔ Flujo completo de usuario validado
+
+Autor
+
+Iván Campos Farfán
+Técnico en Programación y Análisis de Sistemas
+Proyecto académico – Desarrollo de Software Web
