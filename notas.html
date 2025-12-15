@@ -10,3 +10,158 @@ http://localhost:8080/registro
 
 http://localhost:8080/progreso/nuevo
 
+Using generated security password: dc82ea03-2234-455f-b3df-d535c57a267c
+
+notas:
+
+| Campo    | Valor            |
+| -------- | ---------------- |
+| Email    | `admin@zudum.cl` |
+| Password | `admin123`       |
+| Rol      | `ROLE_ADMIN`     |
+--------
+
+🟢 Paso 1 — Muévete a la carpeta correcta
+
+En PowerShell, escribe:
+
+cd zudum1
+
+
+Luego presiona Enter.
+
+Tu prompt debería verse más o menos así:
+
+PS C:\Users\ivanc\Escritorio\zudum-1\zudum1>
+
+
+👉 CONFIRMA visualmente que estás en zudum1
+
+🟢 Paso 2 — Revisa que exista el wrapper
+
+Ahora escribe:
+
+dir
+
+
+Y fíjate si aparece alguno de estos archivos:
+
+mvnw
+
+mvnw.cmd
+
+.mvn
+
+
+
+
+
+Ahora sí:
+
+.\mvnw.cmd spring-boot:run
+
+
+PS C:\Users\ivanc\Escritorio\zudum-1> cd .\zudum1\
+PS C:\Users\ivanc\Escritorio\zudum-1\zudum1> docker images
+REPOSITORY    TAG       IMAGE ID       CREATED          SIZE
+zudum         local     daf7eef6b0f8   15 minutes ago   607MB
+hello-world   latest    d4aaab6242e0   4 months ago     20.3kB
+PS C:\Users\ivanc\Escritorio\zudum-1\zudum1> docker info
+Client:
+ Version:    28.3.2
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.6.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-ai.exe
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.25.0-desktop.1
+    Path:     C:\Program Files\Docker\cli-plugins\docker-buildx.exe
+  cloud: Docker Cloud (Docker Inc.)
+    Version:  v0.4.2
+    Path:     C:\Program Files\Docker\cli-plugins\docker-cloud.exe
+  compose: Docker Compose (Docker Inc.)
+    Version:  v2.38.2-desktop.1
+    Path:     C:\Program Files\Docker\cli-plugins\docker-compose.exe
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.41
+    Path:     C:\Program Files\Docker\cli-plugins\docker-debug.exe
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.1.11
+    Path:     C:\Program Files\Docker\cli-plugins\docker-desktop.exe
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.29
+    Path:     C:\Program Files\Docker\cli-plugins\docker-extension.exe
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+    Version:  v1.4.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-init.exe
+  mcp: Docker MCP Plugin (Docker Inc.)
+    Version:  v0.9.9
+    Path:     C:\Program Files\Docker\cli-plugins\docker-mcp.exe
+  model: Docker Model Runner (EXPERIMENTAL) (Docker Inc.)
+    Version:  v0.1.33
+    Path:     C:\Program Files\Docker\cli-plugins\docker-model.exe
+  sbom: View the packaged-based Software Bill Of Materials (SBOM) for an image (Anchore Inc.)
+    Version:  0.6.0
+    Path:     C:\Program Files\Docker\cli-plugins\docker-sbom.exe
+  scout: Docker Scout (Docker Inc.)
+    Version:  v1.18.1
+    Path:     C:\Program Files\Docker\cli-plugins\docker-scout.exe
+
+Server:
+ Containers: 2
+  Running: 1
+  Paused: 0
+  Stopped: 1
+ Images: 2
+ Server Version: 28.3.2
+ Storage Driver: overlayfs
+  driver-type: io.containerd.snapshotter.v1
+ Logging Driver: json-file
+ Cgroup Driver: cgroupfs
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Discovered Devices:
+  cdi: docker.com/gpu=webgpu
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 nvidia runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 05044ec0a9a75232cad458027ca83437aae3f4da
+ runc version: v1.2.5-0-g59923ef
+ init version: de40ad0
+ Security Options:
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 6.6.87.2-microsoft-standard-WSL2
+ Operating System: Docker Desktop
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 16
+ Total Memory: 7.606GiB
+ Name: docker-desktop
+ ID: e545a97b-a020-4fc7-a343-b1abea02e430
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ HTTP Proxy: http.docker.internal:3128
+ HTTPS Proxy: http.docker.internal:3128
+ No Proxy: hubproxy.docker.internal
+ Labels:
+  com.docker.desktop.address=npipe://\\.\pipe\docker_cli
+ Experimental: false
+ Insecure Registries:
+  hubproxy.docker.internal:5555
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+
+WARNING: DOCKER_INSECURE_NO_IPTABLES_RAW is set
+PS C:\Users\ivanc\Escritorio\zudum-1\zudum1>

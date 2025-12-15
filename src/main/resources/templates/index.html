@@ -5,44 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Zudum - Mi Dashboard</title>
 
-    <!-- CSS oficial con colores de Zudum -->
+    <!-- CSS oficial -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
 
     <style>
-        /* Tabla (por si la usas después, no estorba) */
-        .tabla-zudum {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .tabla-zudum th, .tabla-zudum td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: left;
-        }
-        .tabla-zudum th {
-            background-color: #f0f0f0;
-        }
-        .acciones a {
-            margin-right: 10px;
-        }
+        /* ===== Estilos internos ===== */
 
-        /* Títulos centrados */
         .titulo-form,
         .titulo-catalogo {
             text-align: center;
         }
 
-        /* Formulario centrado */
         .form-progreso {
             max-width: 600px;
-            margin: 0 auto 30px; /* centrado + espacio inferior */
+            margin: 0 auto 30px;
         }
 
         .form-progreso div {
             margin-bottom: 8px;
         }
 
-        /* Catálogo 3x3 de posters */
+        /* Catálogo */
         .grid-catalogo {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -57,12 +40,12 @@
         .poster-item img {
             width: 350px;
             height: 520px;
-            object-fit: cover;              /* recorta sin deformar */
+            object-fit: cover;
             border-radius: 12px;
             box-shadow: 0 0 8px rgba(0,0,0,0.35);
             display: block;
             margin: 0 auto;
-            transition: transform 0.2s ease, box-shadow 0.2s ease; /* Hover */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .poster-item:hover img {
@@ -91,14 +74,12 @@
 </head>
 <body>
 
-    <!-- Navbar con colores desde style.css -->
+    <!-- ===== Navbar ===== -->
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <div class="content-container">
 
-        <!-- =========================
-             Registrar progreso rápido
-        ========================== -->
+        <!-- ===== Registro rápido ===== -->
         <h2 class="titulo-form" id="fastProgressSection">Registrar: fast progress bar</h2>
 
         <form th:action="@{/progreso/guardar}" method="post" class="form-progreso">
@@ -127,28 +108,23 @@
                 </select>
             </div>
 
-            <!-- Para el registro rápido dejamos por defecto VIENDO -->
             <input type="hidden" name="estado" value="VIENDO">
 
-            <button type="submit" style="margin-top: 10px;">Guardar progreso</button>
+            <button type="submit" style="margin-top:10px;">Guardar progreso</button>
         </form>
 
-        <!-- =========================
-             Catálogo 3x3 de posters
-        ========================== -->
+        <!-- ===== Catálogo ===== -->
         <h2 class="titulo-catalogo">Catálogo</h2>
+
         <div class="grid-catalogo">
-            <!--
-                Asume que tienes 9 imágenes PNG en /static/img:
-                1.png, 2.png, ..., 9.png
-                donde el nombre del archivo coincide con el id de la serie.
-            -->
             <div th:each="s : ${series}" class="poster-item">
-                <img th:src="@{'/img/' + ${s.id} + '.png'}"
+
+                <!-- ✅ RUTA CORRECTA DE IMAGEN -->
+                <img th:src="@{/img/{id}.png(id=${s.id})}"
                      th:alt="'Poster de ' + ${s.tituloLatam}">
+
                 <p th:text="${s.tituloLatam}"></p>
 
-                <!-- Botón debajo del póster -->
                 <button type="button"
                         class="btn-agregar-listado"
                         th:attr="data-serie-id=${s.id}">
@@ -159,11 +135,10 @@
 
     </div>
 
-    <!-- Footer con degradé desde style.css -->
+    <!-- ===== Footer ===== -->
     <div th:replace="~{fragments/footer :: footer}"></div>
 
-    <!-- JS para combos dependientes del "progreso rápido"
-         y para el botón "Agregar a mi listado" -->
+    <!-- ===== JS ===== -->
     <script>
         const quickSerieSelect = document.getElementById('quickSerieSelect');
         const quickTemporadaSelect = document.getElementById('quickTemporadaSelect');
@@ -187,8 +162,7 @@
                             opt.textContent = `Temporada ${t.numeroTemporada}`;
                             quickTemporadaSelect.appendChild(opt);
                         });
-                    })
-                    .catch(err => console.error('Error cargando temporadas (quick):', err));
+                    });
             });
 
             quickTemporadaSelect.addEventListener('change', function () {
@@ -207,28 +181,17 @@
                             opt.textContent = `Episodio ${e.numeroEpisodio}: ${e.titulo}`;
                             quickEpisodioSelect.appendChild(opt);
                         });
-                    })
-                    .catch(err => console.error('Error cargando episodios (quick):', err));
+                    });
             });
         }
 
-        // Botones "Agregar a mi listado" debajo de cada póster
-        const agregarBtns = document.querySelectorAll('.btn-agregar-listado');
-        agregarBtns.forEach(btn => {
+        document.querySelectorAll('.btn-agregar-listado').forEach(btn => {
             btn.addEventListener('click', () => {
                 const serieId = btn.getAttribute('data-serie-id');
-                if (!quickSerieSelect) return;
-
-                // Selecciona la serie en el combo
                 quickSerieSelect.value = serieId;
-                // Dispara el change para cargar temporadas
                 quickSerieSelect.dispatchEvent(new Event('change'));
-
-                // Hace scroll suave al formulario de progreso rápido
-                const fastSection = document.getElementById('fastProgressSection');
-                if (fastSection) {
-                    fastSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                document.getElementById('fastProgressSection')
+                        .scrollIntoView({ behavior: 'smooth' });
             });
         });
     </script>

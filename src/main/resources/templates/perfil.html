@@ -1,113 +1,196 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zudum - Mi Perfil</title>
+    <title>Zudum · Mi Perfil</title>
 
+    <!-- CSS oficial -->
     <link rel="stylesheet" th:href="@{/css/style.css}">
 
     <style>
+        .perfil-header {
+            margin-bottom: 20px;
+        }
+
+        .perfil-header p {
+            margin: 6px 0;
+        }
+
         .tabla-zudum {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
+
         .tabla-zudum th,
         .tabla-zudum td {
             border: 1px solid #ccc;
-            padding: 8px;
+            padding: 10px;
             text-align: left;
         }
+
         .tabla-zudum th {
-            background-color: #f0f0f0;
+            background-color: #f5f5f5;
         }
+
         .acciones-form {
             display: flex;
             gap: 8px;
             align-items: center;
         }
+
         .acciones-form select {
-            padding: 2px 4px;
+            padding: 4px 6px;
         }
+
         .acciones-form button {
-            padding: 4px 8px;
+            padding: 4px 10px;
+            cursor: pointer;
         }
+
         .link-eliminar {
             color: #b00020;
             text-decoration: none;
+            font-weight: bold;
         }
+
         .link-eliminar:hover {
             text-decoration: underline;
+        }
+
+        .estado-chip {
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .VIENDO { background-color: #e3f2fd; color: #0d47a1; }
+        .TERMINADA { background-color: #e8f5e9; color: #1b5e20; }
+        .CONGELADA { background-color: #fff3e0; color: #e65100; }
+        .DESEO_VER { background-color: #f3e5f5; color: #4a148c; }
+
+        .empty-msg {
+            margin-top: 20px;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
 
-    <div th:replace="~{fragments/navbar :: navbar}"></div>
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-    <div class="content-container">
+<div class="content-container">
+
+    <!-- =====================
+         HEADER PERFIL
+    ====================== -->
+    <div class="perfil-header">
         <h2>Mi perfil Zudum</h2>
 
         <p>
-            Bienvenido a tu perfil. Aquí puedes ver tu progreso en las series
-            y cambiar el estado o eliminar alguna de tu listado.
+            Usuario autenticado:
+            <strong th:text="${#authentication.name}"></strong>
         </p>
 
-        <table class="tabla-zudum" th:if="${progresos != null and !progresos.isEmpty()}">
-            <thead>
-                <tr>
-                    <th>Serie</th>
-                    <th>Estado actual</th>
-                    <th>Temporada</th>
-                    <th>Episodio</th>
-                    <th>Cambiar estado</th>
-                    <th>Eliminar</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="p : ${progresos}">
-                    <td th:text="${p.serie.tituloLatam}"></td>
-                    <td th:text="${p.estado}"></td>
-                    <td th:text="${p.temporadaActual}"></td>
-                    <td th:text="${p.episodioActual}"></td>
-                    <td>
-                        <!-- Form para cambiar estado -->
-                        <form th:action="@{/progreso/estado}" method="post" class="acciones-form">
-                            <input type="hidden" name="progresoId" th:value="${p.id}">
-
-                            <select name="estado">
-                                <option value="VIENDO"
-                                        th:selected="${p.estado.name() == 'VIENDO'}">Viendo</option>
-                                <option value="TERMINADA"
-                                        th:selected="${p.estado.name() == 'TERMINADA'}">Terminada</option>
-                                <option value="CONGELADA"
-                                        th:selected="${p.estado.name() == 'CONGELADA'}">Congelada</option>
-                                <option value="DESEO_VER"
-                                        th:selected="${p.estado.name() == 'DESEO_VER'}">Deseo ver</option>
-                            </select>
-
-                            <button type="submit">Actualizar</button>
-                        </form>
-                    </td>
-                    <td>
-                        <a th:href="@{'/progreso/eliminar/' + ${p.id}}"
-                           class="link-eliminar"
-                           onclick="return confirm('¿Seguro que quieres eliminar esta serie de tu perfil?');">
-                            Eliminar
-                        </a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <p th:if="${progresos == null or progresos.isEmpty()}">
-            Aún no tienes series en tu perfil. Agrega alguna desde el inicio usando
-            <strong>Registrar: fast progress bar</strong>.
+        <p>
+            Gestión de progreso de series asociadas al usuario autenticado.
         </p>
     </div>
 
-    <div th:replace="~{fragments/footer :: footer}"></div>
+    <!-- =====================
+         TABLA DE PROGRESO
+    ====================== -->
+    <table class="tabla-zudum"
+           th:if="${progresos != null and !progresos.isEmpty()}">
+
+        <thead>
+            <tr>
+                <th>Serie</th>
+                <th>Estado</th>
+                <th>Temporada</th>
+                <th>Episodio</th>
+                <th>Actualizar estado</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="p : ${progresos}">
+                <td th:text="${p.serie.tituloLatam}"></td>
+
+                <td>
+                    <span class="estado-chip"
+                          th:text="${p.estado}"
+                          th:classappend="' ' + ${p.estado}">
+                    </span>
+                </td>
+
+                <td th:text="${p.temporadaActual}"></td>
+                <td th:text="${p.episodioActual}"></td>
+
+                <!-- Cambiar estado -->
+                <td>
+                    <form th:action="@{/progreso/estado}"
+                          method="post"
+                          class="acciones-form">
+
+                        <input type="hidden"
+                               name="progresoId"
+                               th:value="${p.id}">
+
+                        <select name="estado">
+                            <option value="VIENDO"
+                                    th:selected="${p.estado.name() == 'VIENDO'}">
+                                Viendo
+                            </option>
+                            <option value="TERMINADA"
+                                    th:selected="${p.estado.name() == 'TERMINADA'}">
+                                Terminada
+                            </option>
+                            <option value="CONGELADA"
+                                    th:selected="${p.estado.name() == 'CONGELADA'}">
+                                Congelada
+                            </option>
+                            <option value="DESEO_VER"
+                                    th:selected="${p.estado.name() == 'DESEO_VER'}">
+                                Deseo ver
+                            </option>
+                        </select>
+
+                        <button type="submit">Actualizar</button>
+                    </form>
+                </td>
+
+                <!-- Eliminar -->
+                <td>
+                    <a th:href="@{'/progreso/eliminar/' + ${p.id}}"
+                       class="link-eliminar"
+                       onclick="return confirm('¿Seguro que deseas eliminar esta serie de tu perfil?');">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- =====================
+         MENSAJE VACÍO
+    ====================== -->
+    <p class="empty-msg"
+       th:if="${progresos == null or progresos.isEmpty()}">
+        Aún no tienes series en tu perfil.
+        Agrega alguna desde el inicio utilizando
+        <strong>Registrar: fast progress bar</strong>.
+    </p>
+
+</div>
+
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 </body>
 </html>

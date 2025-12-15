@@ -2,104 +2,146 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Zudum - Catálogo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zudum · Catálogo</title>
+
+    <!-- CSS oficial -->
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        .catalogo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            margin-top: 30px;
+        }
+
+        .catalogo-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.15);
+            padding: 12px;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .catalogo-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 16px rgba(0,0,0,0.25);
+        }
+
+        .catalogo-card img {
+            width: 100%;
+            height: 380px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .catalogo-card h3 {
+            margin: 10px 0 4px;
+        }
+
+        .catalogo-card p {
+            font-size: 0.9rem;
+        }
+
+        .estado-chip {
+            display: inline-block;
+            padding: 4px 8px;
+            margin-top: 6px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .VIENDO { background-color: #e3f2fd; color: #0d47a1; }
+        .TERMINADA { background-color: #e8f5e9; color: #1b5e20; }
+        .CONGELADA { background-color: #fff3e0; color: #e65100; }
+        .DESEO_VER { background-color: #f3e5f5; color: #4a148c; }
+
+        .acciones {
+            margin-top: 10px;
+        }
+
+        .acciones a {
+            display: inline-block;
+            margin-top: 6px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Zudum</h1>
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<!-- 🔹 Selects para registrar progreso sin escribir texto -->
-<h2>Registrar progreso rápido</h2>
+<div class="content-container">
 
-<form action="/progreso/marcar" method="post">
+    <!-- =====================
+         HEADER
+    ====================== -->
+    <h2>Catálogo de series</h2>
     <p>
-        <label for="serieSelect">Serie:</label>
-        <select id="serieSelect" name="serieId" required>
-            <option value="">-- Elige una serie --</option>
-            <option th:each="s : ${series}"
-                    th:value="${s.id}"
-                    th:text="${s.tituloLatam}">
-                Dark
-            </option>
-        </select>
+        Explora las series disponibles y revisa tu estado de visualización.
     </p>
 
-    <p>
-        <label for="tempSelect">Temporada:</label>
-        <select id="tempSelect" name="temporada" required>
-            <option value="">-- Elige temporada --</option>
-            <option th:each="t : ${temporadas}"
-                    th:value="${t.numeroTemporada}"
-                    th:text="${'T' + t.numeroTemporada + ' - ' + t.serie.tituloLatam}">
-                T1 - Dark
-            </option>
-        </select>
-    </p>
+    <!-- =====================
+         GRID DE SERIES
+    ====================== -->
+    <div class="catalogo-grid">
 
-    <p>
-        <label for="epiSelect">Episodio:</label>
-        <select id="epiSelect" name="episodio" required>
-            <option value="">-- Elige episodio --</option>
-            <option th:each="e : ${episodios}"
-                    th:value="${e.numeroEpisodio}"
-                    th:text="${'Ep ' + e.numeroEpisodio + ' - ' + e.titulo}">
-                Ep 1 - El comienzo
-            </option>
-        </select>
-    </p>
+        <div class="catalogo-card"
+             th:each="serie : ${series}">
 
-    <button type="submit">Guardar progreso</button>
-</form>
+            <!-- Poster -->
+            <img th:src="@{'/img/' + ${serie.id} + '.png'}"
+                 th:alt="'Poster de ' + ${serie.tituloLatam}">
 
-<hr>
+            <!-- Títulos -->
+            <h3 th:text="${serie.tituloLatam}"></h3>
+            <p>
+                <em th:text="${serie.tituloOriginal}"></em>
+            </p>
 
-<!-- 🔹 Catálogo de tarjetas -->
-<h2>Catálogo de series</h2>
+            <!-- Descripción -->
+            <p th:text="${serie.descripcion}"></p>
 
-<div th:each="serie : ${series}"
-     style="border:1px solid #ccc; padding:10px; margin:10px; display:inline-block; width:250px;">
+            <!-- Estado del usuario -->
+            <div th:if="${progresoPorSerie[serie.id] != null}">
+                <span class="estado-chip"
+                      th:text="${progresoPorSerie[serie.id].estado}"
+                      th:classappend="' ' + ${progresoPorSerie[serie.id].estado}">
+                </span>
 
-    <!-- Poster estático. Puedes poner /static/img/1.jpg, 2.jpg, etc. -->
-    <div>
-        <img th:src="@{'/img/' + ${serie.id} + '.jpg'}"
-             alt="Poster"
-             style="width:100%; max-height:300px; object-fit:cover;">
+                <p style="margin-top: 4px; font-size: 0.85rem;">
+                    T<span th:text="${progresoPorSerie[serie.id].temporadaActual}"></span>
+                    ·
+                    E<span th:text="${progresoPorSerie[serie.id].episodioActual}"></span>
+                </p>
+            </div>
+
+            <div th:unless="${progresoPorSerie[serie.id] != null}">
+                <span class="estado-chip DESEO_VER">
+                    No iniciada
+                </span>
+            </div>
+
+            <!-- Acciones -->
+            <div class="acciones">
+                <a th:href="@{'/temporadas/serie/' + ${serie.id}}">
+                    Ver temporadas y episodios →
+                </a>
+            </div>
+
+        </div>
+
     </div>
 
-    <h3 th:text="${serie.tituloLatam}">Título LATAM</h3>
-    <p><em th:text="${serie.tituloOriginal}">Título original</em></p>
-    <p th:text="${serie.descripcion}">Descripción</p>
-
-    <!-- Estado desde PROGRESO_SERIE -->
-    <p>
-        <strong>Estado: </strong>
-        <span th:if="${progresoPorSerie[serie.id] != null}"
-              th:switch="${progresoPorSerie[serie.id].estado}">
-            <span th:case="'VIENDO'">Viendo</span>
-            <span th:case="'TERMINADA'">Terminada</span>
-            <span th:case="'CONGELADA'">Congelada</span>
-            <span th:case="'DESEO_VER'">Deseo ver</span>
-        </span>
-        <span th:unless="${progresoPorSerie[serie.id] != null}">
-            No iniciada
-        </span>
-    </p>
-
-    <p th:if="${progresoPorSerie[serie.id] != null}">
-        Temp <span th:text="${progresoPorSerie[serie.id].temporadaActual}">1</span>,
-        Ep <span th:text="${progresoPorSerie[serie.id].episodioActual}">1</span>
-    </p>
-
-    <p>
-        <a th:href="@{'/temporadas/serie/' + ${serie.id}}">Ver temporadas y capítulos</a>
-    </p>
 </div>
 
-<hr>
-
-<p>
-    <a href="/perfil">Ir a mi perfil</a>
-</p>
+<!-- Footer -->
+<div th:replace="~{fragments/footer :: footer}"></div>
 
 </body>
 </html>
